@@ -100,6 +100,7 @@ for eachline in fp:
             b[17],b[18],b[19],int(b[20]),int(b[21]),\
             int(b[22]),int(b[23])) 
     
+
     try:
  
         cursor.execute(sql)
