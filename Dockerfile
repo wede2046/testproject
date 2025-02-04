@@ -1,3 +1,48 @@
-FROM anolis-registry.cn-zhangjiakou.cr.aliyuncs.com/openanolis/python
-RUN apt-get update
-RUN  wget  -O ml "https://cdn-lfs-us-1.hf-mirror.com/repos/80/3b/803bf3a0c970ed5c554d34586697cf1613396ec4158c96d5290742c7421a5d88/58858233513d76b8703e72eed6ce16807b523328188e13329257fb9594462945?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27model.safetensors%3B+filename%3D%22model.safetensors%22%3B&Expires=1738233070&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczODIzMzA3MH19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy11cy0xLmhmLmNvL3JlcG9zLzgwLzNiLzgwM2JmM2EwYzk3MGVkNWM1NTRkMzQ1ODY2OTdjZjE2MTMzOTZlYzQxNThjOTZkNTI5MDc0MmM3NDIxYTVkODgvNTg4NTgyMzM1MTNkNzZiODcwM2U3MmVlZDZjZTE2ODA3YjUyMzMyODE4OGUxMzMyOTI1N2ZiOTU5NDQ2Mjk0NT9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSoifV19&Signature=tb2mb-ZiXB5xlj7WF13ZFQeC5DpElj5A6QDnumCozmu8xkN5I88G-KEXciu8mbnORKT-z2G%7EGYB0KVZUW85jnhUUVuPbIQm3QXUEHDyTWq19pvdO%7EflOSS4EAtPEWDDrofcpsXM4QU6bNxGSFR9Fqo74L5C0dEFDrZQlCZJyss3JQMFL09A%7EBL9Qt0B0Zusvt9-44OOkBDeAIn0T3sDHcA65QqnvxYGAfmriDW5LjfKyN3vlEP1Igouh299HNrTdx-05uHszkDB6WyJnRh%7Eqx5G6bDFVM3fywpJaewK3%7EpFAqZrn7O96yzE-NHubedw5-1xC8HENsqrykuEXsTpYwA__&Key-Pair-Id=K24J24Z295AEI9"
+# Use Ubuntu 20.04 as the base image
+FROM ubuntu:20.04
+
+# Set non-interactive mode for apt-get
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package lists and install basic dependencies
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    wget \
+    curl \
+    vim \
+    gnupg2 \
+    lsb-release \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install CUDA 12.0
+RUN apt-get update && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb && \
+    dpkg -i cuda-keyring_1.0-1_all.deb && \
+    apt-get update && \
+    apt-get install -y cuda-12-0 --fix-missing
+
+# Set environment variables for CUDA
+ENV PATH=/usr/local/cuda-12.0/bin:${PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda-12.0/lib64:${LD_LIBRARY_PATH}
+
+# Install cuDNN 8.6.0
+RUN apt-get install -y libcudnn8=8.6.0.164-1+cuda12.0
+
+# Install Python and necessary Python packages
+RUN apt-get update && \
+    apt-get install -y python3-pip && \
+    pip3 install --upgrade pip && \
+    pip3 install numpy \
+    tensorflow-gpu==2.13.0 \
+    torch \
+    transformers \
+    accelerate
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Set the working directory
+WORKDIR /app
+ 
