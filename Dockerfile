@@ -44,7 +44,7 @@ WORKDIR /app
 #RUN pip3 install -r requirements.txt
 
 # 可选：预下载预训练模型（减少运行时下载时间）
-RUN python3 -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('runwayml/stable-diffusion-v1-5', cache_dir='/app/cache')"
+#RUN python3 -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('runwayml/stable-diffusion-v1-5', cache_dir='/app/cache')"
 
 # 阶段2：中间清理阶段 (Intermediate Stage)
 FROM builder AS intermediate
