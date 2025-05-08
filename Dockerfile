@@ -37,11 +37,11 @@ RUN pip3 install --no-cache-dir \
 WORKDIR /app
 
 # 复制代码和配置文件
-COPY train.py /app/
-COPY requirements.txt /app/
+#COPY train.py /app/
+#COPY requirements.txt /app/
 
 # 安装额外依赖（如果有）
-RUN pip3 install -r requirements.txt
+#RUN pip3 install -r requirements.txt
 
 # 可选：预下载预训练模型（减少运行时下载时间）
 RUN python3 -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('runwayml/stable-diffusion-v1-5', cache_dir='/app/cache')"
