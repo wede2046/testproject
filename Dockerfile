@@ -18,8 +18,8 @@ RUN pip3 install numpy pillow matplotlib
 WORKDIR /app
 
 # 复制训练代码
-COPY train.py /app/train.py
-COPY requirements.txt /app/requirements.txt
+#COPY train.py /app/train.py
+#COPY requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt
 
 # 环境变量
